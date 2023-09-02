@@ -1,6 +1,12 @@
 const canvas = document.querySelector('canvas')
 const context = canvas.getContext('2d')
+const gameOverScreen = document.querySelector('.game-over')
+const score = document.querySelector('.score')
+const scoreValue = document.querySelector()
+const resetBtn = document.querySelector('reset-btn')
 const size = 30
+const eatAudio = new Audio('../assets/audio/eat-fx.mp3')
+const gameOverAudio = new Audio('../assets/audio/game-over-fx.mp3')
 
 const snake = [
   { x: 300, y: 300 },
@@ -18,7 +24,7 @@ const randomPosition = () => {
 const food = {
     x: randomPosition(),
     y: randomPosition(),
-    color: 'red'
+    color: '#00ff00'
 }
 
 const drawSnake = () => {
@@ -66,6 +72,52 @@ const moveSnake = () => {
     snake.shift()
 }
 
+const checkEat = () => {
+    const head = snake[snake.length - 1]
+    let teste = 0
+
+    if (head.x === food.x && head.y === food.y) {
+        snake.push(head)
+        eatAudio.play()
+        teste += 10
+        score.textContent = teste.toString()
+
+        let x = randomPosition()
+        let y = randomPosition()
+
+        while (snake.find(position => {
+            position.x === x && position.y === y
+        })) {
+            x = randomPosition()
+            y = randomPosition()
+        }
+
+        food.x = x
+        food.y = y
+
+
+    }
+}
+
+const checkCollision = () => {
+    const head = snake[snake.length - 1]
+    const neckIndex = snake.length - 2
+    const canvasLimit = canvas.width - size
+    const wallCollision = head.x < 0 || head.x > canvasLimit || head.y < 0 || head.y > canvasLimit
+    const selfCollison = snake.find((position, index) => {
+        return index < neckIndex && position.x === head.x && position.y === head.y
+    })
+
+    if (wallCollision || selfCollison) {
+        
+    } 
+}
+
+const gameOver = () => {
+    direction = undefined
+
+}
+
 const gameLoop = () => {
     clearInterval(loopID)
     context.clearRect(0, 0, 600, 600)
@@ -73,6 +125,8 @@ const gameLoop = () => {
     drawFood()
     moveSnake()
     drawSnake()
+    checkEat()
+    checkCollision()
 
     loopID = setTimeout(() => {
         gameLoop()
