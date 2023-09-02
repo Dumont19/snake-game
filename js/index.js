@@ -111,6 +111,7 @@ const checkCollision = () => {
 }
 
 const gameOver = () => {
+  gameOverAudio.play()
   direction = undefined
 
   canvas.style.display = 'none'
